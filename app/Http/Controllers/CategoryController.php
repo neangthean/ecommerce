@@ -11,12 +11,6 @@ use Illuminate\Support\Facades\DB;
 
 class CategoryController extends Controller
 {
-    /**
-     * Store a newly created category in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function store(Request $request)
     {
         DB::beginTransaction(); // Start a database transaction
@@ -39,11 +33,14 @@ class CategoryController extends Controller
             DB::commit(); // Commit the transaction if successful
 
             // Return a success response with the created category
-            return response()->json([
-                'status' => 201,
-                'message' => 'Category created successfully!',
-                'category' => $category
-            ], 201); // 201 Created status code
+            return response()->json(
+                [
+                    'status' => 201,
+                    'message' => 'Category created successfully!',
+                    'category' => $category
+                ],
+                201
+            ); // 201 Created status code
         } catch (ValidationException $e) {
             DB::rollBack(); // Rollback transaction on validation error
             // Return validation errors
@@ -61,40 +58,30 @@ class CategoryController extends Controller
         }
     }
 
-    /**
-     * Display a listing of the categories.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function index()
     {
         $categories = Category::all(); // Fetch all categories
 
-        return response()->json([
-            'categories' => $categories
-        ]);
+        return response()->json(
+            [
+                'status' => 200,
+                'categories' => $categories
+            ],
+            200
+        );
     }
 
-    /**
-     * Display the specified category.
-     *
-     * @param  \App\Models\Category  $category
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function show(Category $category)
     {
-        return response()->json([
-            'category' => $category
-        ]);
+        return response()->json(
+            [
+                'status' => 200,
+                'category' => $category
+            ],
+            200
+        );
     }
 
-    /**
-     * Update the specified category in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Category  $category
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function update(Request $request, Category $category)
     {
         DB::beginTransaction();
@@ -107,10 +94,14 @@ class CategoryController extends Controller
             $category->update($validatedData);
             DB::commit();
 
-            return response()->json([
-                'message' => 'Category updated successfully!',
-                'category' => $category
-            ]);
+            return response()->json(
+                [
+                    'status' => 200,
+                    'message' => 'Category updated successfully!',
+                    'category' => $category
+                ],
+                200
+            );
         } catch (ValidationException $e) {
             DB::rollBack();
             return response()->json([
@@ -125,20 +116,19 @@ class CategoryController extends Controller
             ], 500);
         }
     }
-
-    /**
-     * Remove the specified category from storage.
-     *
-     * @param  \App\Models\Category  $category
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function destroy(Category $category)
     {
         DB::beginTransaction();
         try {
             $category->delete();
             DB::commit();
-            return response()->json(['message' => 'Category deleted successfully!'], 204); // 204 No Content
+            return response()->json(
+                [
+                    'status' => 204,
+                    'message' => 'Category deleted successfully!'
+                ],
+                204
+            ); // 204 No Content
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([

@@ -23,6 +23,9 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api'
 
 // Products Routes
 Route::post('/store-product', [ProductController::class, 'store']);
+Route::get('/show-all-products', [ProductController::class, 'index']); // if we want to filter we put query parameter. Example usage in URL: /api/products?category_id=1
+Route::get('/show-product/{product}', [ProductController::class, 'show']); // product is must be id of products
+
+// Category Routes
 Route::post('/store-category', [CategoryController::class, 'store']);
-Route::get('/show-all-products', [ProductController::class, 'index']);
-Route::get('/show-product/{product}', [ProductController::class, 'show']);
+Route::get('/show-all-categories', [CategoryController::class, 'index']);
