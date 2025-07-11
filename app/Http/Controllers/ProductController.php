@@ -58,80 +58,13 @@ class ProductController extends Controller
             DB::commit();
 
             $product->load('colors'); // Eager load colors with pivot data
-            return response()->json([
-                'message' => 'Product created successfully!',
-                'product' => $product
-            ], 201);
-        } catch (ValidationException $e) {
-            DB::rollBack();
-            return response()->json([
-                'message' => 'Validation Error',
-                'errors' => $e->errors()
-            ], 422);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'message' => 'An error occurred',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    public function show(Product $product)
-    {
-        // Eager load colors and their pivot data (including image_url)
-        $product->load('colors');
-
-        return response()->json([
-            'product' => $product
-        ]);
-    }
-
-    public function update(Request $request, Product $product)
-    {
-        DB::beginTransaction();
-
-        try {
-            $validatedData = $request->validate([
-                'title' => 'sometimes|required|string|max:255',
-                'subTitle' => 'nullable|string|max:255',
-                'discount' => 'nullable|numeric|min:0|max:999.99',
-                'category_id' => 'sometimes|required|exists:categories,id',
-                'price' => 'sometimes|required|numeric|min:0|max:999999.99',
-                'product_image' => 'nullable|url|max:255',
-                'colors' => 'nullable|array',
-                'colors.*.name' => 'required|string|max:50',
-                'colors.*.image_url' => 'nullable|url|max:255',
-            ]);
-
-            $product->update($validatedData);
-
-            if (array_key_exists('colors', $validatedData)) {
-                $pivotData = [];
-                if (!empty($validatedData['colors'])) {
-                    foreach ($validatedData['colors'] as $colorData) {
-                        $colorName = $colorData['name'];
-                        $imageUrl = $colorData['image_url'] ?? null;
-
-                        $color = Color::firstOrCreate(['name' => $colorName]);
-                        $pivotData[$color->id] = ['image_url' => $imageUrl];
-                    }
-                }
-                // Sync the colors with their specific image URLs.
-                // This will attach new, detach removed, and update existing pivot data.
-                // it will insert or update data in product_color table
-                $product->colors()->sync($pivotData);
-            }
-
-            DB::commit();
-
-            $product->load('colors'); // Eager load colors with updated pivot data
             return response()->json(
                 [
                     'status' => 200,
-                    'message' => 'Product updated successfully!',
+                    'message' => 'Product created successfully!',
                     'product' => $product
-                ]
+                ],
+                200
             );
         } catch (ValidationException $e) {
             DB::rollBack();
@@ -143,29 +76,6 @@ class ProductController extends Controller
             DB::rollBack();
             return response()->json([
                 'message' => 'An error occurred',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    public function destroy(Product $product)
-    {
-        DB::beginTransaction();
-        try {
-            // onDelete('cascade') in migrations handles pivot table entries
-            $product->delete();
-            DB::commit();
-            return response()->json(
-                [
-                    'status' => 204,
-                    'message' => 'Product deleted successfully!'
-                ],
-                204
-            );
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'message' => 'An error occurred while deleting the product.',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -214,5 +124,104 @@ class ProductController extends Controller
             ],
             200
         );
+    }
+
+    public function show(Product $product)
+    {
+        // Eager load colors and their pivot data (including image_url)
+        $product->load('colors');
+
+        return response()->json(
+            [
+                'status' => 200,
+                'product' => $product
+            ],
+            200
+        );
+    }
+
+    public function update(Request $request, Product $product)
+    {
+        DB::beginTransaction();
+
+        try {
+            $validatedData = $request->validate([
+                'title' => 'sometimes|required|string|max:255',
+                'subTitle' => 'nullable|string|max:255',
+                'discount' => 'nullable|numeric|min:0|max:999.99',
+                'category_id' => 'sometimes|required|exists:categories,id',
+                'price' => 'sometimes|required|numeric|min:0|max:999999.99',
+                'product_image' => 'nullable|url|max:255',
+                'colors' => 'nullable|array',
+                'colors.*.name' => 'required|string|max:50',
+                'colors.*.image_url' => 'nullable|url|max:255',
+            ]);
+
+            $product->update($validatedData);
+
+            if (array_key_exists('colors', $validatedData)) {
+                $pivotData = [];
+                if (!empty($validatedData['colors'])) {
+                    foreach ($validatedData['colors'] as $colorData) {
+                        $colorName = $colorData['name'];
+                        $imageUrl = $colorData['image_url'] ?? null;
+
+                        $color = Color::firstOrCreate(['name' => $colorName]);
+                        $pivotData[$color->id] = ['image_url' => $imageUrl];
+                    }
+                }
+                // Sync the colors with their specific image URLs.
+                // This will attach new, detach removed, and update existing pivot data.
+                // it will insert or update data in product_color table
+                $product->colors()->sync($pivotData);
+            }
+
+            DB::commit();
+
+            $product->load('colors'); // Eager load colors with updated pivot data
+            return response()->json(
+                [
+                    'status' => 200,
+                    'message' => 'Product updated successfully!',
+                    'product' => $product
+                ],
+                200
+            );
+        } catch (ValidationException $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Validation Error',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'An error occurred',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function destroy(Product $product)
+    {
+        DB::beginTransaction();
+        try {
+            // onDelete('cascade') in migrations handles pivot table entries
+            $product->delete();
+            DB::commit();
+            return response()->json(
+                [
+                    'status' => 204,
+                    'message' => 'Product deleted successfully!'
+                ],
+                204
+            );
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'An error occurred while deleting the product.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }
