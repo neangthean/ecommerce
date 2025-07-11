@@ -26,5 +26,3 @@ Route::post('/store-product', [ProductController::class, 'store']);
 Route::post('/store-category', [CategoryController::class, 'store']);
 Route::get('/show-all-products', [ProductController::class, 'index']);
 Route::get('/show-product/{product}', [ProductController::class, 'show']);
-
-// Pro
