@@ -11,12 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
-    /**
-     * Store a newly created product in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\JsonResponse
-     */
+
     public function store(Request $request)
     {
         DB::beginTransaction();
@@ -82,12 +77,6 @@ class ProductController extends Controller
         }
     }
 
-    /**
-     * Display the specified product.
-     *
-     * @param  \App\Models\Product  $product
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function show(Product $product)
     {
         // Eager load colors and their pivot data (including image_url)
@@ -98,13 +87,6 @@ class ProductController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified product in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Product  $product
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function update(Request $request, Product $product)
     {
         DB::beginTransaction();
@@ -166,12 +148,6 @@ class ProductController extends Controller
         }
     }
 
-    /**
-     * Remove the specified product from storage.
-     *
-     * @param  \App\Models\Product  $product
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function destroy(Product $product)
     {
         DB::beginTransaction();
@@ -195,12 +171,6 @@ class ProductController extends Controller
         }
     }
 
-    /**
-     * Display a listing of products with optional color filtering.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function index(Request $request)
     {
         $products = Product::with('colors'); // Eager load colors with pivot data
