@@ -24,7 +24,7 @@ class Color extends Model
     public function products()
     {
         // Include 'image_url' from the pivot table
-        return $this->belongsToMany(Product::class, 'product_color', 'color_id', 'product_id')
+        return $this->belongsToMany(Product::class, 'product_colors', 'color_id', 'product_id')
                     ->withPivot('image_url') // Specify the pivot columns to retrieve
                     ->withTimestamps(); // If you want created_at/updated_at from pivot
     }

@@ -42,7 +42,7 @@ class Product extends Model
     {
         // Specify the pivot table name and the foreign keys
         // Also, specify the additional columns from the pivot table you want to retrieve
-        return $this->belongsToMany(Color::class, 'product_color', 'product_id', 'color_id')
+        return $this->belongsToMany(Color::class, 'product_colors', 'product_id', 'color_id')
             ->withPivot('image_url') // Crucial: This tells Eloquent to retrieve the 'image_url' from the pivot table
             ->withTimestamps(); // If you want created_at/updated_at from pivot
     }
