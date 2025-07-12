@@ -32,5 +32,6 @@ Route::get('/show-product/{product}', [ProductController::class, 'show']); // pr
 
 // Category Routes
 Route::post('/store-category', [CategoryController::class, 'store']);
-// http://127.0.0.1:8000/api/show-all-categories
 Route::get('/show-all-categories', [CategoryController::class, 'index']);
+// http://127.0.0.1:8000/api/show-category/1 (1 is id of categories)
+Route::get('/show-category/{category}', [CategoryController::class, 'show']);
