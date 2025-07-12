@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         // If this is a new table creation
-        if (!Schema::hasTable('product_color')) {
-            Schema::create('product_color', function (Blueprint $table) {
+        if (!Schema::hasTable('product_colors')) {
+            Schema::create('product_colors', function (Blueprint $table) {
                 $table->unsignedBigInteger('product_id');
                 $table->unsignedBigInteger('color_id');
                 $table->string('image_url')->nullable(); // New column for the image URL
@@ -26,8 +26,8 @@ return new class extends Migration
             });
         } else {
             // If the table already exists, add the column
-            if (!Schema::hasColumn('product_color', 'image_url')) {
-                Schema::table('product_color', function (Blueprint $table) {
+            if (!Schema::hasColumn('product_colors', 'image_url')) {
+                Schema::table('product_colors', function (Blueprint $table) {
                     $table->string('image_url')->nullable()->after('color_id'); // Add after color_id
                 });
             }
@@ -40,12 +40,12 @@ return new class extends Migration
     public function down(): void
     {
         // If this was a new table creation
-        if (Schema::hasTable('product_color') && !Schema::hasColumn('product_color', 'image_url')) {
-            Schema::dropIfExists('product_color');
+        if (Schema::hasTable('product_colors') && !Schema::hasColumn('product_colors', 'image_url')) {
+            Schema::dropIfExists('product_colors');
         } else {
             // If we just added the column
-            if (Schema::hasColumn('product_color', 'image_url')) {
-                Schema::table('product_color', function (Blueprint $table) {
+            if (Schema::hasColumn('product_colors', 'image_url')) {
+                Schema::table('product_colors', function (Blueprint $table) {
                     $table->dropColumn('image_url');
                 });
             }
