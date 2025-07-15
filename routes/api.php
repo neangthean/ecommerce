@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AutoSliderController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Http\Request;
@@ -35,3 +36,7 @@ Route::post('/store-category', [CategoryController::class, 'store']);
 Route::get('/show-all-categories', [CategoryController::class, 'index']);
 // http://127.0.0.1:8000/api/show-category/1 (1 is id of categories)
 Route::get('/show-category/{category}', [CategoryController::class, 'show']);
+
+// Auto Slider Routes
+Route::post('/store-auto-slider', [AutoSliderController::class, 'store']);
+Route::get('/show-all-auto-slider', [AutoSliderController::class, 'index']);
