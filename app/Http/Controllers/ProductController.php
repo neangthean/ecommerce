@@ -19,7 +19,7 @@ class ProductController extends Controller
         try {
             $validatedData = $request->validate([
                 'title' => 'required|string|max:255',
-                'subTitle' => 'nullable|string|max:255',
+                'sub_title' => 'nullable|string|max:255',
                 'discount' => 'nullable|numeric|min:0|max:999.99',
                 'category_id' => 'required|exists:categories,id',
                 'price' => 'required|numeric|min:0|max:999999.99',
@@ -31,7 +31,7 @@ class ProductController extends Controller
 
             $product = Product::create([
                 'title' => $validatedData['title'],
-                'subTitle' => $validatedData['subTitle'] ?? null,
+                'sub_title' => $validatedData['sub_title'] ?? null,
                 'discount' => $validatedData['discount'] ?? 0.00,
                 'category_id' => $validatedData['category_id'],
                 'price' => $validatedData['price'],
@@ -147,7 +147,7 @@ class ProductController extends Controller
         try {
             $validatedData = $request->validate([
                 'title' => 'sometimes|required|string|max:255',
-                'subTitle' => 'nullable|string|max:255',
+                'sub_title' => 'nullable|string|max:255',
                 'discount' => 'nullable|numeric|min:0|max:999.99',
                 'category_id' => 'sometimes|required|exists:categories,id',
                 'price' => 'sometimes|required|numeric|min:0|max:999999.99',
