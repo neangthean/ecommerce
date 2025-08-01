@@ -31,6 +31,9 @@ Route::get('/show-all-products', [ProductController::class, 'index']); // if we 
 // http://127.0.0.1:8000/api/show-product/1 (1 is id of products)
 Route::get('/show-product/{product}', [ProductController::class, 'show']); // {product} is must be id of products
 
+// Product Routes But Random
+Route::get('/show-all-products-random', [ProductController::class, 'indexRandom']);
+
 // Category Routes
 Route::post('/store-category', [CategoryController::class, 'store']);
 Route::get('/show-all-categories', [CategoryController::class, 'index']);
