@@ -126,6 +126,52 @@ class ProductController extends Controller
         );
     }
 
+    public function indexRandom(Request $request)
+    {
+        // $products = Product::with('colors'); // Eager load colors with pivot data
+        $products = Product::with('colors')->inRandomOrder(); // get random data
+
+        // Optional: Filter products by category ID.
+        // Example usage in URL: /api/products?category_id=1
+        if ($request->has('category_id')) {
+            $categoryId = $request->input('category_id');
+            $products->where('category_id', $categoryId);
+        }
+
+        // // Example: Filter by color name (e.g., ?color=red)
+        // if ($request->has('color')) {
+        //     $colorName = $request->input('color');
+        //     $products->whereHas('colors', function ($query) use ($colorName) {
+        //         $query->where('name', $colorName);
+        //     });
+        // }
+        // // Example: Filter by multiple colors (e.g., ?colors[]=red&colors[]=blue)
+        // if ($request->has('colors') && is_array($request->input('colors'))) {
+        //     $colorNames = $request->input('colors');
+        //     foreach ($colorNames as $colorName) {
+        //         $products->whereHas('colors', function ($query) use ($colorName) {
+        //             $query->where('name', $colorName);
+        //         });
+        //     }
+        // }
+        // // Example: Filter by image URL (less common, but possible)
+        // if ($request->has('image_url')) {
+        //     $imageUrl = $request->input('image_url');
+        //     $products->whereHas('colors', function ($query) use ($imageUrl) {
+        //         $query->wherePivot('image_url', $imageUrl); // Use wherePivot for pivot table columns
+        //     });
+        // }
+
+
+        return response()->json(
+            [
+                'status' => 200,
+                'products' => $products->get()
+            ],
+            200
+        );
+    }
+
     public function show(Product $product)
     {
         // Eager load colors and their pivot data (including image_url)
