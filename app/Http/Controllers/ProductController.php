@@ -84,6 +84,7 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $products = Product::with('colors'); // Eager load colors with pivot data
+        // $products = Product::with('colors')->paginate(10); // Eager load colors with pivot data
 
         // Optional: Filter products by category ID.
         // Example usage in URL: /api/products?category_id=1
@@ -121,6 +122,7 @@ class ProductController extends Controller
             [
                 'status' => 200,
                 'products' => $products->get()
+                // 'products' => $products
             ],
             200
         );
@@ -128,8 +130,8 @@ class ProductController extends Controller
 
     public function indexRandom(Request $request)
     {
-        // $products = Product::with('colors'); // Eager load colors with pivot data
-        $products = Product::with('colors')->inRandomOrder(); // get random data
+        $products = Product::with('colors'); // Eager load colors with pivot data
+        // $products = Product::with('colors')->inRandomOrder(); // get random data
 
         // Optional: Filter products by category ID.
         // Example usage in URL: /api/products?category_id=1
@@ -162,11 +164,44 @@ class ProductController extends Controller
         //     });
         // }
 
+        // Optional: Random order (default behavior)
+
+        if ($request->has('sort')) {
+            switch ($request->input('sort')) {
+                case 'newest':
+                    $products->orderBy('created_at', 'desc');
+                    break;
+                case 'latest':
+                    $products->orderBy('created_at', 'asc');
+                    break;
+                case 'cheapest':
+                    $products->orderBy('price', 'asc');
+                    break;
+                case 'expensive':
+                    $products->orderBy('price', 'desc');
+                    break;
+                case 'top_discount':
+                    $products->orderBy('discount', 'desc');
+                    break;
+                default:
+                    $products->inRandomOrder(); // fallback to random
+                    break;
+            }
+        } else {
+            $products->inRandomOrder(); // default random
+        }
+
+        // Set per page (default 4 if not provided)
+        $perPage = $request->get('per_page', 4);
+
+        // Apply pagination at the end
+        $paginatedProducts = $products->paginate($perPage);
 
         return response()->json(
             [
                 'status' => 200,
-                'products' => $products->get()
+                // 'products' => $products->get()
+                'products' => $paginatedProducts
             ],
             200
         );
