@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AutoSliderController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Http\Request;
@@ -43,3 +44,7 @@ Route::get('/show-category/{category}', [CategoryController::class, 'show']);
 // Auto Slider Routes
 Route::post('/store-auto-slider', [AutoSliderController::class, 'store']);
 Route::get('/show-all-auto-slider', [AutoSliderController::class, 'index']);
+
+// Cart Routes
+Route::post('/add-to-cart', [CartController::class, 'addToCart'])->middleware('auth:api');
+Route::get('/show-cart', [CartController::class, 'showCart'])->middleware('auth:api');

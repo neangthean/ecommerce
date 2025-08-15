@@ -140,6 +140,11 @@ class ProductController extends Controller
             $products->where('category_id', $categoryId);
         }
 
+        if ($request->has('search_query')) {
+            $searchQuery = $request->input('search_query');
+            $products->where('title', 'like', '%' . $searchQuery . '%');
+        }
+
         // // Example: Filter by color name (e.g., ?color=red)
         // if ($request->has('color')) {
         //     $colorName = $request->input('color');
@@ -175,10 +180,12 @@ class ProductController extends Controller
                     $products->orderBy('created_at', 'asc');
                     break;
                 case 'cheapest':
-                    $products->orderBy('price', 'asc');
+                    // $products->orderBy('price', 'asc');
+                    $products->orderByRaw('ROUND(price - ((price * discount) / 100), 2) ASC');
                     break;
                 case 'expensive':
-                    $products->orderBy('price', 'desc');
+                    // $products->orderBy('price', 'desc');
+                    $products->orderByRaw('ROUND(price - ((price * discount) / 100), 2) DESC');
                     break;
                 case 'top_discount':
                     $products->orderBy('discount', 'desc');
