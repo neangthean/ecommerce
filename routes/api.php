@@ -48,3 +48,5 @@ Route::get('/show-all-auto-slider', [AutoSliderController::class, 'index']);
 // Cart Routes
 Route::post('/add-to-cart', [CartController::class, 'addToCart'])->middleware('auth:api');
 Route::get('/show-cart', [CartController::class, 'showCart'])->middleware('auth:api');
+// http://127.0.0.1:8000/api/delete-from-cart/1 (1 is id of carts)
+Route::delete('/delete-from-cart/{id}', [CartController::class, 'deleteFromCart'])->middleware('auth:api');
