@@ -5,6 +5,7 @@ use App\Http\Controllers\AutoSliderController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ReviewController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -50,3 +51,10 @@ Route::post('/add-to-cart', [CartController::class, 'addToCart'])->middleware('a
 Route::get('/show-cart', [CartController::class, 'showCart'])->middleware('auth:api');
 // http://127.0.0.1:8000/api/delete-from-cart/1 (1 is id of carts)
 Route::delete('/delete-from-cart/{id}', [CartController::class, 'deleteFromCart'])->middleware('auth:api');
+
+// Reviews Routes
+Route::post('/store-update-review', [ReviewController::class, 'store'])->middleware('auth:api');
+// http://127.0.0.1:8000/api/show-review/1 (1 is id of products)
+Route::get('/show-review/{id}', [ReviewController::class, 'showByProduct']);
+// http://127.0.0.1:8000/api/delete-review/1 (1 is id of reviews)
+Route::delete('/delete-review/{id}', [ReviewController::class, 'destroy'])->middleware('auth:api');

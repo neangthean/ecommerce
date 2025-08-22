@@ -46,4 +46,9 @@ class Product extends Model
             ->withPivot('image_url') // Crucial: This tells Eloquent to retrieve the 'image_url' from the pivot table
             ->withTimestamps(); // If you want created_at/updated_at from pivot
     }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
 }
