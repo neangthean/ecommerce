@@ -128,7 +128,7 @@ class ProductController extends Controller
         );
     }
 
-    public function indexRandom(Request $request)
+    public function indexPagination(Request $request)
     {
         $products = Product::with('colors'); // Eager load colors with pivot data
         // $products = Product::with('colors')->inRandomOrder(); // get random data

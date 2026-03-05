@@ -17,6 +17,10 @@ class Cart extends Model
         'price',
     ];
 
+    protected $casts = [
+        'price' => 'double',
+    ];
+
     /**
      * A cart belongs to a user.
      */

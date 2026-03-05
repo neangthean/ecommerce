@@ -34,7 +34,7 @@ Route::get('/show-all-products', [ProductController::class, 'index']); // if we 
 Route::get('/show-product/{product}', [ProductController::class, 'show']); // {product} is must be id of products
 
 // Product Routes But Random
-Route::get('/show-all-products-random', [ProductController::class, 'indexRandom']);
+Route::get('/show-all-products-pagination', [ProductController::class, 'indexPagination']);
 
 // Category Routes
 Route::post('/store-category', [CategoryController::class, 'store']);
@@ -49,6 +49,7 @@ Route::get('/show-all-auto-slider', [AutoSliderController::class, 'index']);
 // Cart Routes
 Route::post('/add-to-cart', [CartController::class, 'addToCart'])->middleware('auth:api');
 Route::get('/show-cart', [CartController::class, 'showCart'])->middleware('auth:api');
+Route::put('/update-cart-by-quantity', [CartController::class, 'updateCartByQuantity'])->middleware('auth:api');
 // http://127.0.0.1:8000/api/delete-from-cart/1 (1 is id of carts)
 Route::delete('/delete-from-cart/{id}', [CartController::class, 'deleteFromCart'])->middleware('auth:api');
 
