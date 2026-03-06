@@ -218,7 +218,7 @@ class CartController extends Controller
     }
 
     // Update cart by quantity
-    public function updateCartByQuantity(Request $request)
+    public function updateCartQuantity(Request $request)
     {
         // Start a database transaction for atomicity
         DB::beginTransaction();
