@@ -19,6 +19,7 @@ return new class extends Migration
                 $table->string('sub_title')->nullable();
                 $table->decimal('discount', 5, 2)->default(0.00);
                 $table->decimal('price', 8, 2)->default(0.00);
+                $table->integer('stock')->default(0);
                 $table->string('product_image')->nullable();
                 $table->unsignedBigInteger('category_id');
                 $table->timestamps();

@@ -21,7 +21,13 @@ class Product extends Model
         'discount',
         'category_id',
         'price',
+        'stock',
         'product_image',
+    ];
+
+    protected $casts = [
+        'price' => 'double',
+        'discount' => 'double',
     ];
 
     /**

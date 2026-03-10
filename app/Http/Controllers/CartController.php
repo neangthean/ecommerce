@@ -162,7 +162,8 @@ class CartController extends Controller
             return response()->json(
                 [
                     'status' => 401,
-                    'message' => 'Unauthenticated.'
+                    'message' => 'Unauthenticated.',
+                    'cart' => [],
                 ],
                 401
             );
@@ -215,6 +216,77 @@ class CartController extends Controller
             ],
             200
         );
+    }
+
+    // Update cart by quantity
+    public function updateCartQuantity(Request $request)
+    {
+        // Start a database transaction for atomicity
+        DB::beginTransaction();
+
+        try {
+            $request->validate([
+                'cart_id' => 'required|exists:carts,id',
+                'quantity' => 'required|integer|min:1'
+            ]);
+            $user = $request->user();
+            if (!$user) {
+                return response()->json(
+                    [
+                        'status' => 401,
+                        'message' => 'Unauthenticated.'
+                    ],
+                    401
+                );
+            }
+            // Find cart item that belongs to this user
+            $cartItem = Cart::where('id', $request->cart_id)
+                ->where('user_id', $user->id)
+                ->first();
+
+            if (!$cartItem) {
+                return response()->json(
+                    [
+                        'status' => 404,
+                        'message' => 'Cart item not found.',
+                    ],
+                    404
+                );
+            }
+
+            $cartItem->quantity = $request->quantity;
+            $cartItem->save();
+
+            DB::commit();
+
+            return response()->json(
+                [
+                    'status' => 200,
+                    'message' => 'Update cart by quantity successfully.',
+                ],
+                200
+            );
+        } catch (ValidationException $e) {
+            DB::rollBack();
+            return response()->json(
+                [
+                    'status' => 422,
+                    'message' => 'Validation Error',
+                    'errors' => $e->errors(),
+                ],
+                422
+            );
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(
+                [
+                    'status' => 500,
+                    'message' => 'An error occurred while edit cart by quantity.',
+                    'error' => $e->getMessage(),
+                ],
+                500
+            );
+        }
     }
 
     // Delete a product from the authenticated user's cart.
