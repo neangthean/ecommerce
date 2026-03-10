@@ -162,7 +162,8 @@ class CartController extends Controller
             return response()->json(
                 [
                     'status' => 401,
-                    'message' => 'Unauthenticated.'
+                    'message' => 'Unauthenticated.',
+                    'cart' => [],
                 ],
                 401
             );
