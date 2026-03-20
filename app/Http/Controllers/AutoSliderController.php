@@ -15,7 +15,8 @@ class AutoSliderController extends Controller
         try {
             DB::beginTransaction();
             $validator = Validator::make($request->all(), [
-                'image_url' => 'required|string|max:255',
+                // 'image_url' => 'required|string|max:255',
+                // 'image_url' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // max 2MB
                 'title' => 'required|string|max:255',
                 'sub_title' => 'required|string|max:255',
             ]);
@@ -29,6 +30,13 @@ class AutoSliderController extends Controller
                 );
             }
             $data = $request->all();
+            if ($request->hasFile('image_url')) {
+                $image = $request->file('image_url');
+                $name = time() . '.' . $image->getClientOriginalExtension();
+                $destinationPath = public_path('/sliders'); // folder name is sliders
+                $image->move($destinationPath, $name);
+                $data['image_url'] = $name;
+            }
             $autoSlider = AutoSlider::create($data);
             DB::commit();
             return response()->json(

@@ -55,9 +55,9 @@ class AuthController extends Controller
             if ($request->hasFile('profile_url')) {
                 $image = $request->file('profile_url');
                 $name = time() . '.' . $image->getClientOriginalExtension();
-                // $destinationPath = public_path('/users'); // folder name is users
-                // $image->move($destinationPath, $name);
-                // $input['profile_url'] = $name;
+                $destinationPath = public_path('/users'); // folder name is users
+                $image->move($destinationPath, $name);
+                $input['profile_url'] = $name;
 
                 // Storage::disk('s3')->put('images', $image, $name);
                 // // Get the public URL of the uploaded file
@@ -73,11 +73,11 @@ class AuthController extends Controller
 
 
                 // Store the file in S3 in the "images" directory with public visibility
-                $filePath = 'images/' . $name;
-                Storage::disk('s3')->put($filePath, file_get_contents($image), 'public');
-                // Get the public URL of the uploaded file
-                $imageUrl = Storage::disk('s3')->url($filePath);
-                $input['profile_url'] = $imageUrl;
+                // $filePath = 'images/' . $name;
+                // Storage::disk('s3')->put($filePath, file_get_contents($image), 'public');
+                // // Get the public URL of the uploaded file
+                // $imageUrl = Storage::disk('s3')->url($filePath);
+                // $input['profile_url'] = $imageUrl;
             }
 
             // Generate a 6-digit OTP.
@@ -423,42 +423,23 @@ class AuthController extends Controller
             $user = Auth::user();
 
             if ($user != null) {
-                // if ($request->hasFile('profile_url')) {
-                //     $image = $request->file('profile_url');
-                //     $name = time() . '.' . $image->getClientOriginalExtension();
-                //     $destinationPath = public_path('/users');
-                //     $image->move($destinationPath, $name);
-                //     $data['profile_url'] = $name;
-                //     $oldImage = $user->profile_url;
-                // }
-                // $user->update($data);
-                // $destinationPath = public_path('/users');
-                // // After update new image and then delete old image
-                // if (file_exists($destinationPath . '/' . $oldImage)) {
-                //     unlink($destinationPath . '/' . $oldImage);
-                // }
-
                 if ($request->hasFile('profile_url')) {
                     $image = $request->file('profile_url');
                     $name = time() . '.' . $image->getClientOriginalExtension();
-                    $filePath = 'images/' . $name;
-
-                    // Optional: delete old image
-                    if ($user->profile_url) {
-                        $oldPath = parse_url($user->profile_url, PHP_URL_PATH);
-                        if ($oldPath) {
-                            Storage::disk('s3')->delete(ltrim($oldPath, '/'));
-                        }
-                    }
-
-                    // Upload new image to S3
-                    Storage::disk('s3')->put($filePath, file_get_contents($image), 'public');
-                    $imageUrl = Storage::disk('s3')->url($filePath);
-                    $data['profile_url'] = $imageUrl;
+                    $destinationPath = public_path('/users');
+                    $image->move($destinationPath, $name);
+                    $data['profile_url'] = $name;
+                    $oldImage = $user->profile_url;
+                }
+                $user->update($data);
+                $destinationPath = public_path('/users');
+                // After update new image and then delete old image
+                if (file_exists($destinationPath . '/' . $oldImage)) {
+                    unlink($destinationPath . '/' . $oldImage);
                 }
 
                 // Update user
-                $user->update($data);
+                // $user->update($data);
 
                 return response()->json(
                     [

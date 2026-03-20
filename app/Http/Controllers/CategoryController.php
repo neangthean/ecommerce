@@ -20,14 +20,22 @@ class CategoryController extends Controller
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255|unique:categories,name', // Category name must be unique
                 'description' => 'nullable|string', // Optional description
-                'image_url' => 'nullable|string',
+                'image_url' => 'nullable|image',
             ]);
+
+            if ($request->hasFile('image_url')) {
+                $image = $request->file('image_url');
+                $name = time() . '.' . $image->getClientOriginalExtension();
+                $destinationPath = public_path('/categories'); // folder name is categories
+                $image->move($destinationPath, $name);
+                $validatedData['image_url'] = $name;
+            }
 
             // Create the new category
             $category = Category::create([
                 'name' => $validatedData['name'],
                 'description' => $validatedData['description'] ?? null,
-                "image_url" => $validatedData['image_url'] ?? null,
+                'image_url' => $validatedData['image_url'] ?? null,
             ]);
 
             DB::commit(); // Commit the transaction if successful
@@ -89,10 +97,31 @@ class CategoryController extends Controller
             $validatedData = $request->validate([
                 'name' => 'sometimes|required|string|max:255|unique:categories,name,' . $category->id,
                 'description' => 'nullable|string',
+                'image_url' => 'nullable|image',
             ]);
+
+            // Initialize as null so it doesn't break later
+            $oldImage = null;
+
+            if ($request->hasFile('image_url')) {
+                $image = $request->file('image_url');
+                $name = time() . '.' . $image->getClientOriginalExtension();
+                $destinationPath = public_path('/categories'); // folder name is categories
+                $image->move($destinationPath, $name);
+                $validatedData['image_url'] = $name;
+                $oldImage = $category->image_url;
+            }
 
             $category->update($validatedData);
             DB::commit();
+
+            if ($oldImage) {
+                $destinationPath = public_path('/categories/');
+                // After update new image and then delete old image
+                if (file_exists($destinationPath . $oldImage)) {
+                    unlink($destinationPath . $oldImage);
+                }
+            }
 
             return response()->json(
                 [
@@ -116,10 +145,19 @@ class CategoryController extends Controller
             ], 500);
         }
     }
+
     public function destroy(Category $category)
     {
         DB::beginTransaction();
         try {
+            if ($$category->image_url) {
+                $destinationPath = public_path('/categories/');
+                // Delete old image
+                if (file_exists($destinationPath . $$category->image_url)) {
+                    unlink($destinationPath . $$category->image_url);
+                }
+            }
+
             $category->delete();
             DB::commit();
             return response()->json(
