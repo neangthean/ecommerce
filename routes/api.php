@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AutoSliderController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReviewController;
 use Illuminate\Http\Request;
@@ -41,6 +42,7 @@ Route::post('/store-category', [CategoryController::class, 'store']);
 Route::get('/show-all-categories', [CategoryController::class, 'index']);
 // http://127.0.0.1:8000/api/show-category/1 (1 is id of categories)
 Route::get('/show-category/{category}', [CategoryController::class, 'show']);
+Route::post('/update-category/{category}', [CategoryController::class, 'update']);
 
 // Auto Slider Routes
 Route::post('/store-auto-slider', [AutoSliderController::class, 'store']);
@@ -59,3 +61,7 @@ Route::post('/store-update-review', [ReviewController::class, 'store'])->middlew
 Route::get('/show-review/{id}', [ReviewController::class, 'showByProduct']);
 // http://127.0.0.1:8000/api/delete-review/1 (1 is id of reviews)
 Route::delete('/delete-review/{id}', [ReviewController::class, 'destroy'])->middleware('auth:api');
+
+// Checkout Route
+Route::post('/chechout/process-checkout', [CheckoutController::class, 'processCheckout'])->middleware('auth:api');
+Route::post('/chechout/ship_order', [CheckoutController::class, 'shipOrder'])->middleware('auth:api');
