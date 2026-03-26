@@ -16,7 +16,7 @@ return new class extends Migration
             // Links this payment to the specific order
             $table->foreignId('order_id')->constrained('orders')->onDelete('cascade');
 
-            $table->string('transaction_id')->unique(); // ID from Stripe/PayPal/etc.
+            $table->string('transaction_id')->nullable()->unique(); // ID from Stripe/PayPal/etc.
             $table->string('payment_method'); // e.g., 'credit_card', 'paypal'
             $table->decimal('amount', 10, 2);
             $table->string('currency')->default('USD');

@@ -18,6 +18,12 @@ return new class extends Migration
                 $table->string('name')->unique(); // Unique name for the color (e.g., 'red', 'blue')
                 $table->timestamps(); // created_at and updated_at columns
             });
+            // Schema::create('colors', function (Blueprint $table) {
+            //     $table->id();
+            //     $table->string('name'); // e.g., "Red", "Midnight Blue"
+            //     $table->string('hex_code')->nullable(); // e.g., "#FF0000" (Useful for Flutter UI)
+            //     $table->timestamps();
+            // });
         }
     }
 

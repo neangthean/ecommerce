@@ -16,12 +16,13 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('product_id');
             $table->foreignId('color_id')->nullable()->constrained('colors')->onDelete('cascade');
+            $table->foreignId('size_id')->nullable()->constrained('sizes')->onDelete('cascade');
             // $table->foreignId('user_id')->constrained()->onDelete('cascade');
             // $table->foreignId('product_id')->constrained()->onDelete('cascade');
             $table->integer('quantity')->default(1);
             // It's good practice to store the price at the time of adding to the cart
             // to handle price changes on the product.
-            $table->decimal('price', 8, 2);
+            // $table->decimal('price', 8, 2);
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

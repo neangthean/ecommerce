@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('order_id')->constrained('orders')->onDelete('cascade');
             $table->foreignId('product_id')->nullable()->constrained('products')->onDelete('set null');
             $table->foreignId('color_id')->nullable()->constrained('colors');
+            $table->foreignId('size_id')->nullable()->constrained('sizes')->onDelete('cascade');
 
             $table->integer('quantity');
             $table->decimal('price', 12, 2); // The price at the EXACT moment of checkout

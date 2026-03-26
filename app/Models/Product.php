@@ -44,6 +44,12 @@ class Product extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
+
+    public function productVariants()
+    {
+        return $this->hasMany(ProductVariant::class);
+    }
+
     public function colors()
     {
         // Specify the pivot table name and the foreign keys
@@ -52,6 +58,31 @@ class Product extends Model
             ->withPivot('image_url') // Crucial: This tells Eloquent to retrieve the 'image_url' from the pivot table
             ->withTimestamps(); // If you want created_at/updated_at from pivot
     }
+
+    // public function colors()
+    // {
+    //     // Specify the pivot table name and the foreign keys
+    //     // Also, specify the additional columns from the pivot table you want to retrieve
+    //     return $this->belongsToMany(Color::class, 'product_colors', 'product_id', 'color_id')
+    //         ->withPivot('image_url') // Crucial: This tells Eloquent to retrieve the 'image_url' from the pivot table
+    //         ->as('product_color')
+    //         ->withTimestamps(); // If you want created_at/updated_at from pivot
+    //     // ->afterQuery(fn($models) => $models->makeHidden(['created_at', 'updated_at', 'id']));
+    // }
+
+    public function sizes()
+    {
+        // Specify the pivot table (product_variants), the local key (product_id), and the foreign key (size_id)
+        return $this->belongsToMany(Size::class, 'product_variants', 'product_id', 'size_id')
+            ->withPivot('color_id')
+            ->as('product_variant')
+            ->withTimestamps();
+    }
+
+    // public function productColors()
+    // {
+    //     return $this->hasMany(ProductColor::class);
+    // }
 
     public function reviews()
     {
