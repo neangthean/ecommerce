@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\Color;
+use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\DB;
@@ -23,10 +24,14 @@ class ProductController extends Controller
                 'discount' => 'nullable|numeric|min:0|max:999.99',
                 'category_id' => 'required|exists:categories,id',
                 'price' => 'required|numeric|min:0|max:999999.99',
+                'stock' => 'nullable|integer|min:0',
                 'product_image' => 'nullable|url|max:255',
+                // Colors Validation
                 'colors' => 'nullable|array', // Now an array of objects
                 'colors.*.name' => 'required|string|max:50', // Each color object must have a 'name'
                 'colors.*.image_url' => 'nullable|url|max:255', // Each color object can have an 'image_url'
+                'colors.*.sizes' => 'nullable|array',
+                'colors.*.sizes.*' => 'exists:sizes,id',
             ]);
 
             $product = Product::create([
@@ -35,6 +40,7 @@ class ProductController extends Controller
                 'discount' => $validatedData['discount'] ?? 0.00,
                 'category_id' => $validatedData['category_id'],
                 'price' => $validatedData['price'],
+                'stock' => $validatedData['stock'] ?? 0,
                 'product_image' => $validatedData['product_image'] ?? null,
             ]);
 
@@ -49,6 +55,16 @@ class ProductController extends Controller
 
                     // Prepare data for the pivot table
                     $pivotData[$color->id] = ['image_url' => $imageUrl];
+
+                    if (!empty($colorData['sizes'])) {
+                        foreach ($colorData['sizes'] as $sizeData) {
+                            ProductVariant::create([
+                                "product_id" => $product->id,
+                                "color_id" => $color->id,
+                                "size_id" => $sizeData,
+                            ]);
+                        }
+                    }
                 }
                 // Attach colors with their specific image URLs to the product
                 // it will insert data to product_color table
@@ -132,6 +148,12 @@ class ProductController extends Controller
     {
         $products = Product::with('colors'); // Eager load colors with pivot data
         // $products = Product::with('colors')->inRandomOrder(); // get random data
+
+        // $products = Product::with('productVariants', 'colors');
+        // $products = Product::with(['productColors', 'productVariants.color', 'productVariants.size']);
+        // $products = Product::with('productColors');
+        // $products = Product::with(['colors', 'productVariants.color', 'productVariants.size']);
+        // $products = Product::with(['colors', 'productVariants.size']);
 
         // Optional: Filter products by category ID.
         // Example usage in URL: /api/products?category_id=1
@@ -217,7 +239,8 @@ class ProductController extends Controller
     public function show(Product $product)
     {
         // Eager load colors and their pivot data (including image_url)
-        $product->load('colors');
+        // $product->load('colors');
+        $product->load(['colors', 'productVariants.size']);
 
         return response()->json(
             [

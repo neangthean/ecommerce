@@ -17,6 +17,7 @@ class OrderItem extends Model
         'order_id',
         'product_id',
         'color_id',
+        'size_id',
         'quantity',
         'price',
         'product_name',
@@ -26,7 +27,7 @@ class OrderItem extends Model
      * The attributes that should be cast.
      */
     protected $casts = [
-        'price' => 'decimal:2',
+        'price' => 'double',
         'quantity' => 'integer',
     ];
 
@@ -54,5 +55,13 @@ class OrderItem extends Model
     public function color(): BelongsTo
     {
         return $this->belongsTo(Color::class);
+    }
+
+    /**
+     * Get the size selected for this item.
+     */
+    public function size(): BelongsTo
+    {
+        return $this->belongsTo(Size::class);
     }
 }

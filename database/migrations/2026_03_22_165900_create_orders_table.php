@@ -26,9 +26,9 @@ return new class extends Migration
             $table->decimal('total_amount', 12, 2); // Final amount paid
 
             // Snapshots (Keep these even if user changes profile later)
-            $table->json('shipping_address'); // Stores name, street, city, zip
-            // $table->string('payment_method')->nullable(); // e.g., 'Stripe', 'PayPal'
-            // $table->string('payment_status')->default('unpaid');
+            $table->string('shipping_address')->nullable(); // Stores name, street, city, zip
+            $table->string('payment_method')->nullable(); // e.g., 'Stripe', 'PayPal'
+            $table->string('payment_status')->default('unpaid');
 
             $table->timestamps();
         });

@@ -7,6 +7,8 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\SizeController;
+use App\Http\Controllers\SizeGroupController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -62,6 +64,19 @@ Route::get('/show-review/{id}', [ReviewController::class, 'showByProduct']);
 // http://127.0.0.1:8000/api/delete-review/1 (1 is id of reviews)
 Route::delete('/delete-review/{id}', [ReviewController::class, 'destroy'])->middleware('auth:api');
 
-// Checkout Route
-Route::post('/chechout/process-checkout', [CheckoutController::class, 'processCheckout'])->middleware('auth:api');
-Route::post('/chechout/ship_order', [CheckoutController::class, 'shipOrder'])->middleware('auth:api');
+// Size Group Route
+Route::post('/size-group/create', [SizeGroupController::class, 'create']);
+Route::get('/size-group/show', [SizeGroupController::class, 'show']);
+
+// Size Route
+Route::post('/size/create', [SizeController::class, 'create']);
+Route::get('/size/show', [SizeController::class, 'show']);
+Route::get('/size/show/size-group-id', [SizeController::class, 'showBySizeGroupID']);
+
+// Checkout Routes
+Route::post('/checkout/process-checkout', [CheckoutController::class, 'processCheckout'])->middleware('auth:api');
+Route::post('/checkout/ship_order', [CheckoutController::class, 'shipOrder'])->middleware('auth:api');
+
+// Order history / detail (after successful checkout)
+Route::get('/orders', [CheckoutController::class, 'listOrders'])->middleware('auth:api');
+Route::get('/orders/{order}', [CheckoutController::class, 'getOrderDetail'])->middleware('auth:api');

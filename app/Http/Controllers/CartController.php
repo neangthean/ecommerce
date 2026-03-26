@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use App\Models\Product;
 use App\Models\Color;
+use App\Models\Size;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -25,6 +26,7 @@ class CartController extends Controller
             $validated = $request->validate([
                 'product_id' => 'required|exists:products,id',
                 'color_id' => 'nullable|exists:colors,id',
+                'size_id' => 'nullable|exists:sizes,id',
                 'quantity' => 'required|integer|min:1',
             ]);
 
@@ -67,11 +69,41 @@ class CartController extends Controller
                 }
             }
 
+            // Check size validity
+            if (!empty($validated['size_id'])) {
+                // User provided a size, make sure it's in the product's sizes
+                if (!$product->sizes->contains('id', $validated['size_id'])) {
+                    return response()->json(
+                        [
+                            'status' => 422,
+                            'message' => 'Selected size is not available for this product.',
+                        ],
+                        422
+                    );
+                }
+            } else {
+                // User did not provide size, only allow if product has no sizes
+                if ($product->sizes->isNotEmpty()) {
+                    return response()->json(
+                        [
+                            'status' => 422,
+                            'message' => 'You must select a size for this product.',
+                        ],
+                        422
+                    );
+                }
+            }
+
 
             // $color = Color::findOrFail($validated['color_id']);
             $color = null;
             if (!empty($validated['color_id'])) {
                 $color = Color::findOrFail($validated['color_id']);
+            }
+
+            $size = null;
+            if (!empty($validated['size_id'])) {
+                $size = Size::findOrFail($validated['size_id']);
             }
 
             // 3. Find an existing cart entry for this user and product
@@ -81,15 +113,16 @@ class CartController extends Controller
             $cartItem = Cart::where('user_id', $user->id)
                 ->where('product_id', $product->id)
                 ->where('color_id', $color ? $color->id : null) // strict match on color_id
+                ->where('size_id', $size ? $size->id : null) // strict match on size_id
                 ->first();
 
-            $priceDiscount = round($product->price - (($product->price * $product->discount) / 100), 2);
+            // $priceDiscount = round($product->price - (($product->price * $product->discount) / 100), 2);
 
             if ($cartItem) {
                 // If the item exists, update its quantity
                 $cartItem->quantity += $validated['quantity'];
                 // Update total price
-                $cartItem->price = round($priceDiscount * $cartItem->quantity, 2);
+                // $cartItem->price = round($priceDiscount * $cartItem->quantity, 2);
                 $cartItem->save();
             } else {
                 // If not, create a new cart entry
@@ -97,10 +130,11 @@ class CartController extends Controller
                     'user_id' => $user->id,
                     'product_id' => $product->id,
                     'color_id' => $color ? $color->id : null,
+                    'size_id' => $size ? $size->id : null,
                     'quantity' => $validated['quantity'],
                     // 'price' => $product->price, // Store the current product price
                     // 'price' => $priceDiscount,
-                    'price' => round($priceDiscount * $validated['quantity'], 2),
+                    // 'price' => round($priceDiscount * $validated['quantity'], 2),
                 ]);
             }
 
@@ -120,6 +154,15 @@ class CartController extends Controller
                         ->first();
                 } else {
                     $item->selected_color = null;
+                }
+                if ($item->size_id) {
+                    // Only fetch the one size that matches
+                    $item->selected_size = $item->product
+                        ->sizes()
+                        ->where('sizes.id', $item->size_id)
+                        ->first();
+                } else {
+                    $item->selected_size = null;
                 }
             }
 
@@ -181,6 +224,15 @@ class CartController extends Controller
                     ->first();
             } else {
                 $item->selected_color = null;
+            }
+            if ($item->size_id) {
+                // Only fetch the one size that matches
+                $item->selected_size = $item->product
+                    ->sizes()
+                    ->where('sizes.id', $item->size_id)
+                    ->first();
+            } else {
+                $item->selected_size = null;
             }
         }
 

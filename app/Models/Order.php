@@ -35,10 +35,10 @@ class Order extends Model
      */
     protected $casts = [
         'shipping_address' => 'array',
-        'subtotal' => 'decimal:2',
-        'total_amount' => 'decimal:2',
-        'discount_amount' => 'decimal:2',
-        'shipping_cost' => 'decimal:2',
+        'subtotal' => 'double',
+        'total_amount' => 'double',
+        'discount_amount' => 'double',
+        'shipping_cost' => 'double',
     ];
 
     /**
@@ -60,5 +60,16 @@ class Order extends Model
     public function tracking(): HasOne
     {
         return $this->hasOne(ShippingTracking::class);
+    }
+
+    // ADDED: Relationship for the delivery_addresses table
+    public function deliveryAddress(): HasOne
+    {
+        return $this->hasOne(DeliveryAddress::class);
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
     }
 }

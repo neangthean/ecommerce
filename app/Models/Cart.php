@@ -13,13 +13,14 @@ class Cart extends Model
         'user_id',
         'product_id',
         'color_id',
+        'size_id',
         'quantity',
-        'price',
+        // 'price',
     ];
 
-    protected $casts = [
-        'price' => 'double',
-    ];
+    // protected $casts = [
+    //     'price' => 'double',
+    // ];
 
     /**
      * A cart belongs to a user.
@@ -43,5 +44,13 @@ class Cart extends Model
     public function color()
     {
         return $this->belongsTo(Color::class);
+    }
+
+    /**
+     * A cart belongs to a size.
+     */
+    public function size()
+    {
+        return $this->belongsTo(Size::class);
     }
 }
