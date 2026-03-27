@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\Cart;
 use App\Models\DeliveryAddress;
+use App\Models\ProductColor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -150,6 +151,14 @@ class CheckoutController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
+        $orders->each(function ($order) {
+            $order->orderItems->each(function ($item) {
+                $item->color_image_url = ProductColor::where('product_id', $item->product_id)
+                    ->where('color_id', $item->color_id)
+                    ->value('image_url');
+            });
+        });
+
         return response()->json([
             'status' => 200,
             'orders' => $orders,
@@ -171,6 +180,12 @@ class CheckoutController extends Controller
                 'message' => 'Order not found or access denied.',
             ], 404);
         }
+
+        $order->orderItems->each(function ($item) {
+            $item->color_image_url = ProductColor::where('product_id', $item->product_id)
+                ->where('color_id', $item->color_id)
+                ->value('image_url');
+        });
 
         return response()->json([
             'status' => 200,
